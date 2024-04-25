@@ -1,0 +1,17 @@
+sequenceDiagram
+    buyer->>+react ambassador: Access to reactambassador.com/login
+    react ambassador ->>-buyer: Render login form
+    buyer->>+react ambassador: Fill form and press Sign in button
+    react ambassador->>+api gateway: send login data to backend.com/login
+    api gateway->>+auth microservice: send login data to auth.com/login
+    alt correct credentials
+        auth microservice->>api gateway: send token to client
+    else incorrect credentials
+        auth microservice->>api gateway: send error
+    end
+    api gateway->>-react ambassador: send response
+    alt is token
+        react ambassador->>buyer: redirect reactambassador.com/
+    else is error
+        react ambassador->>buyer: render error message
+    end
