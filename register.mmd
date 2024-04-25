@@ -2,15 +2,15 @@ sequenceDiagram
     buyer->>react ambassador: Access to reactambassador.com/register
     react ambassador->>buyer: Render register form
     buyer->>react ambassador: Fill form and press Submit button
-    react ambassador->>api gateway: send user data to backend.com/register
-    api gateway->>user microservice: send user data to user.com/register
+    react ambassador->>api gateway: POST backend.com/register
+    api gateway->>user microservice: POST user.com/register
     user microservice->>user db: save user
     user db->>user microservice: return user saved
-    user microservice->>+circuit breaker: send lite user data to circuitbreaker.com/user
+    user microservice->>+circuit breaker: POST circuitbreaker.com/user
     alt is open state
         circuit breaker->>-user microservice: return error response
     else is closed | half open
-        circuit breaker->>+auth microservice: send lite user data to auth.com/user
+        circuit breaker->>+auth microservice: POST auth.com/user
         alt is timeout
             circuit breaker->>user microservice: return error response
         else is not timeout
