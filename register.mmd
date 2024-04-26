@@ -6,21 +6,19 @@ sequenceDiagram
     api gateway->>user microservice: POST user.com/register
     user microservice->>user db: save user
     user db->>user microservice: return user saved
-    user microservice->>+circuit breaker: POST circuitbreaker.com/user
     alt is open state
-        circuit breaker->>-user microservice: return error response
+        user microservice->>api gateway: return error response
     else is closed | half open
-        circuit breaker->>+auth microservice: POST auth.com/user
+        user microservice->>auth microservice: POST auth.com/user
         alt is timeout
-            circuit breaker->>user microservice: return error response
+            user microservice->>api gateway: return error response
         else is not timeout
             auth microservice->>auth db: save lite user
             auth db->>auth microservice: return lite user saved
-            auth microservice->>circuit breaker: return lite user saved
-            circuit breaker->>user microservice: return lite user saved
+            auth microservice->>user microservice: return lite user saved
+            user microservice->>api gateway: return lite user saved
         end
     end
-    user microservice->>api gateway: return response
     api gateway->>react ambassador: return response
     alt creaded successfully
         react ambassador->>buyer: redirect reactambassador.com/login
